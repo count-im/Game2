@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jedi Duel: Galactic Conflict</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background-color: #020617;
+            color: #e2e8f0;
+            overflow-x: hidden;
+            margin: 0;
+        }
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .glow-blue {
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.8), 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+        .glow-red {
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.8), 0 0 20px rgba(239, 68, 68, 0.4);
+        }
+        .glow-green {
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.8), 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+        .glow-purple {
+            text-shadow: 0 0 10px rgba(168, 85, 247, 0.8), 0 0 20px rgba(168, 85, 247, 0.4);
+        }
+        .saber-blue {
+            box-shadow: 0 0 15px 2px rgba(59, 130, 246, 0.7);
+        }
+        .saber-red {
+            box-shadow: 0 0 15px 2px rgba(239, 68, 68, 0.7);
+        }
+        .saber-green {
+            box-shadow: 0 0 15px 2px rgba(16, 185, 129, 0.7);
+        }
+        .saber-purple {
+            box-shadow: 0 0 15px 2px rgba(168, 85, 247, 0.7);
+        }
+        
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        .animate-flicker {
+            animation: flicker 0.1s infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        .animate-shake {
+            animation: shake 0.2s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes flash-red {
+            0% { background-color: transparent; }
+            50% { background-color: rgba(239, 68, 68, 0.3); }
+            100% { background-color: transparent; }
+        }
+        .animate-flash-red {
+            animation: flash-red 0.3s ease-out;
+        }
+
+        /* Cinematic Starfield */
+        .starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: -10;
+        }
+        .starfield::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.8) 100%),
+                        url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.5;
+        }
+
+        /* Star Wars Crawl Styles */
+        .crawl-container {
+            display: flex;
+            justify-content: center;
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            background-color: black;
+            overflow: hidden;
+            perspective: 400px;
+        }
+        .crawl-content {
+            position: absolute;
+            top: 100%;
+            width: 90%;
+            max-width: 600px;
+            text-align: justify;
+            color: #feda4a;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            letter-spacing: 2px;
+            line-height: 1.5;
+            transform-origin: 50% 100%;
+            animation: crawl 40s linear forwards;
+        }
+        .crawl-content h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            font-size: 2.5rem;
+        }
+        .crawl-content h2 {
+            text-align: center;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+            font-size: 3.5rem;
+        }
+        @keyframes crawl {
+            0% {
+                top: 50%;
+                transform: rotateX(20deg) translateY(0);
+                opacity: 0;
+            }
+            5% {
+                opacity: 1;
+            }
+            100% {
+                top: -150%;
+                transform: rotateX(25deg) translateY(-1000px);
+                opacity: 0.8;
+            }
+        }
+        .fade-in-blue {
+            color: #4cc9f0;
+            animation: fadeInOut 5s forwards;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Custom scrollbar for combat logs */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 10px;
+        }
+
+        .bg-battle {
+            transition: background-image 2s ease-in-out, opacity 2s ease-in-out;
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.37.0"
+  }
+}
+</script>
+</head>
+<body>
+    <div class="starfield"></div>
+    <div id="root"></div>
+</body>
+</html>
